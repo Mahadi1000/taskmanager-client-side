@@ -6,8 +6,10 @@ export const getAllTasks = createAsyncThunk(
   "getTasks",
   async (args, { rejectWithValue }) => {
     try {
-      const response = await fetch("http://localhost:5000/tasks")
-      const result = await response.json()
+      const response = await fetch(
+        "https://taskmanager-server-f3n1.onrender.com/tasks"
+      );
+      const result = await response.json();
       return result;
     } catch (err) {
       return rejectWithValue("Oops found an error", err.response.data);
@@ -24,13 +26,16 @@ export const createTask = createAsyncThunk(
       // Include the status field with the task data
       const dataWithStatus = { ...taskData, status: "pending" };
 
-      const response = await fetch("http://localhost:5000/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataWithStatus),
-      });
+      const response = await fetch(
+        "https://taskmanager-server-f3n1.onrender.com/tasks",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dataWithStatus),
+        }
+      );
 
       const result = await response.json();
       return result;
@@ -45,13 +50,16 @@ export const updateTaskStatus = createAsyncThunk(
   "tasks/updateStatus",
   async ({ id, status }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://localhost:5000/tasks/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status }),
-      });
+      const response = await fetch(
+        `https://taskmanager-server-f3n1.onrender.com/tasks/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status }),
+        }
+      );
       const result = await response.json();
       return result;
     } catch (err) {
@@ -60,15 +68,14 @@ export const updateTaskStatus = createAsyncThunk(
   }
 );
 
- 
- //update Task status
+//update Task status
 
 export const updateTask = createAsyncThunk(
   "tasks/updateTask",
   async (taskData, { rejectWithValue }) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/tasks/${taskData.id}`,
+        `https://taskmanager-server-f3n1.onrender.com/tasks/${taskData.id}`,
         {
           method: "PUT",
           headers: {
@@ -85,15 +92,17 @@ export const updateTask = createAsyncThunk(
   }
 );
 
-
 // Delete Task action
 export const deleteTask = createAsyncThunk(
   "deleteTask",
   async (taskId, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://localhost:5000/tasks/${taskId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `https://taskmanager-server-f3n1.onrender.com/tasks/${taskId}`,
+        {
+          method: "DELETE",
+        }
+      );
       const result = await response.json();
       if (!response.ok) {
         throw new Error(result.error || "Failed to delete task");
@@ -189,19 +198,21 @@ const tasksSlice = createSlice({
     },
 
     [updateTask.pending]: (state) => {
-    state.loading = true;
-  },
-  [updateTask.fulfilled]: (state, action) => {
-    state.loading = false;
-    const index = state.tasks.findIndex(task => task._id === action.payload._id);
-    if (index !== -1) {
-      state.tasks[index] = action.payload;
-    }
-  },
-  [updateTask.rejected]: (state, action) => {
-    state.loading = false;
-    state.error = action.payload;
-  },
+      state.loading = true;
+    },
+    [updateTask.fulfilled]: (state, action) => {
+      state.loading = false;
+      const index = state.tasks.findIndex(
+        (task) => task._id === action.payload._id
+      );
+      if (index !== -1) {
+        state.tasks[index] = action.payload;
+      }
+    },
+    [updateTask.rejected]: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
   },
 });
 
